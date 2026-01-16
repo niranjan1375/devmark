@@ -6,7 +6,7 @@ export default async function tagRoutes(fastify: FastifyInstance) {
   fastify.get('/', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
 
     // Get all unique tags from user's bookmarks
     const bookmarks = await prisma.bookmark.findMany({
@@ -20,8 +20,8 @@ export default async function tagRoutes(fastify: FastifyInstance) {
     const tagsSet = new Set<string>();
     const tagsMap = new Map<string, any>();
 
-    bookmarks.forEach(bookmark => {
-      bookmark.tags.forEach(tag => {
+    bookmarks.forEach((bookmark: any) => {
+      bookmark.tags.forEach((tag: any) => {
         if (!tagsSet.has(tag.id)) {
           tagsSet.add(tag.id);
           tagsMap.set(tag.id, {

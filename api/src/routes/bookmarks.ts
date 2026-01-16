@@ -8,7 +8,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.get('/', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
 
     const bookmarks = await prisma.bookmark.findMany({
       where: { userId },
@@ -25,7 +25,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.get<{ Params: { id: string } }>('/:id', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
     const { id } = request.params;
 
     const bookmark = await prisma.bookmark.findFirst({
@@ -49,7 +49,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.post<{ Body: CreateBookmarkInput }>('/', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
     const { url, title, note, tags } = request.body;
 
     // Validate required fields
@@ -74,7 +74,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
     // Find or create tags
     const tagRecords = await Promise.all(
-      normalizedTags.map(async (tagName) => {
+      normalizedTags.map(async (tagName: string) => {
         const tag = await prisma.tag.upsert({
           where: { name: tagName },
           update: {},
@@ -107,7 +107,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.put<{ Params: { id: string }; Body: UpdateBookmarkInput }>('/:id', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
     const { id } = request.params;
     const { url, title, note, tags } = request.body;
 
@@ -146,7 +146,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
     if (tags !== undefined) {
       const normalizedTags = normalizeTags(tags);
       const tagRecords = await Promise.all(
-        normalizedTags.map(async (tagName) => {
+        normalizedTags.map(async (tagName: string) => {
           const tag = await prisma.tag.upsert({
             where: { name: tagName },
             update: {},
@@ -187,7 +187,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.delete<{ Params: { id: string } }>('/:id', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
     const { id } = request.params;
 
     // Check if bookmark exists and belongs to user
@@ -210,7 +210,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
   fastify.get<{ Querystring: { tag?: string; search?: string } }>('/search', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = (request.user as any).id;
+    const userId = request.user?.id as string;
     const { tag, search } = request.query;
 
     const where: any = { userId };
