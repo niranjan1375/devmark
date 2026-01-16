@@ -1,0 +1,2 @@
+Placeholder: Create actual PNG icons at 16x16, 48x48, and 128x128 pixels.
+For now, use the SVG or convert it to PNG using an image editor or online tool.

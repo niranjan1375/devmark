@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevMark Capture</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+    }
+    h1 {
+      font-size: 20px;
+      margin: 0 0 16px 0;
+      color: #1f2937;
+    }
+    .brand {
+      color: #2563eb;
+    }
+    .error {
+      background-color: #fee;
+      border: 1px solid #fcc;
+      color: #c00;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .success {
+      background-color: #efe;
+      border: 1px solid #cfc;
+      color: #060;
+      padding: 12px;
+      border-radius: 4px;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+      color: #374151;
+    }
+    input[type="text"],
+    textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    textarea {
+      resize: vertical;
+      font-family: inherit;
+    }
+    .char-count {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    .tags-input {
+      display: flex;
+      gap: 8px;
+    }
+    .tags-input input {
+      flex: 1;
+    }
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background-color: #dbeafe;
+      color: #1e40af;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 12px;
+    }
+    .tag button {
+      background: none;
+      border: none;
+      color: #1e40af;
+      cursor: pointer;
+      padding: 0;
+      font-size: 16px;
+      line-height: 1;
+    }
+    button {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .btn-primary {
+      background-color: #2563eb;
+      color: white;
+      width: 100%;
+    }
+    .btn-primary:hover {
+      background-color: #1d4ed8;
+    }
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #374151;
+    }
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+    }
+    .login-prompt {
+      text-align: center;
+      padding: 20px;
+    }
+    .login-prompt a {
+      color: #2563eb;
+      text-decoration: none;
+    }
+    #url-display {
+      font-size: 12px;
+      color: #6b7280;
+      word-break: break-all;
+      margin-bottom: 12px;
+      padding: 8px;
+      background-color: #f9fafb;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Dev<span class="brand">Mark</span> Capture</h1>
+
+  <div id="loginPrompt" style="display: none;" class="login-prompt">
+    <p>Please log in to DevMark to save bookmarks.</p>
+    <p><a href="http://localhost:3001" target="_blank">Open DevMark</a></p>
+  </div>
+
+  <div id="captureForm">
+    <div id="message"></div>
+    <div id="url-display"></div>
+
+    <div class="form-group">
+      <label for="title">Title *</label>
+      <input type="text" id="title" required>
+    </div>
+
+    <div class="form-group">
+      <label for="note">Note * (Max 200 characters)</label>
+      <textarea id="note" rows="3" maxlength="200" required placeholder="Why are you saving this? What makes it useful?"></textarea>
+      <div class="char-count"><span id="charCount">0</span>/200</div>
+    </div>
+
+    <div class="form-group">
+      <label for="tagInput">Tags (Max 5)</label>
+      <div class="tags-input">
+        <input type="text" id="tagInput" placeholder="Add a tag">
+        <button type="button" class="btn-secondary" id="addTagBtn">Add</button>
+      </div>
+      <div class="tag-list" id="tagList"></div>
+    </div>
+
+    <button type="button" class="btn-primary" id="saveBtn">Save Bookmark</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
