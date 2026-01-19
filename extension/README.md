@@ -9,6 +9,7 @@ Capture-only Chrome extension for DevMark bookmark manager.
 - ✅ Mandatory note field (max 200 characters)
 - ✅ Tag input (max 5 tags, case-insensitive, spaces allowed)
 - ✅ Direct save to DevMark API
+- ✅ API Token authentication (secure, revocable)
 
 ## Installation
 
@@ -31,8 +32,12 @@ The extension expects the DevMark API to be running at `http://localhost:3000`.
 
 To use the extension:
 1. Log in to DevMark web app (http://localhost:3001)
-2. The token will be automatically available to the extension via browser storage
-3. Click the extension icon to capture the current page
+2. Navigate to Settings or Profile
+3. Generate a new API token with name "Chrome Extension"
+4. Copy the generated token (you can only see it once!)
+5. Click the DevMark extension icon
+6. Paste your API token when prompted
+7. The token will be securely stored in Chrome's local storage
 
 ## Usage
 
@@ -54,15 +59,23 @@ To use the extension:
 
 The extension communicates with the DevMark API:
 - Endpoint: `POST /api/bookmarks`
-- Authentication: JWT token stored in `chrome.storage.local`
+- Authentication: API token stored in `chrome.storage.local` and sent via `X-API-Token` header
 - Required fields: `url`, `title`, `note`
 - Optional field: `tags` (array, max 5)
+
+### Security
+
+- API tokens are hashed and stored securely on the server
+- Tokens are revocable through the web interface
+- Each token can be named for easy identification
+- Tokens can have expiration dates (optional)
 
 ## Notes
 
 - This is a capture-only extension - viewing and managing bookmarks is done through the web app
-- The extension requires a valid authentication token from the DevMark web app
+- The extension requires a valid API token from the DevMark web app
 - All bookmark validation (note length, tag count) is enforced both client-side and server-side
+- API tokens are more secure than JWTs for extensions as they can be revoked individually
 
 ## License
 
