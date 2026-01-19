@@ -5,6 +5,7 @@ import jwtPlugin from './plugins/jwt';
 import authRoutes from './routes/auth';
 import bookmarkRoutes from './routes/bookmarks';
 import tagRoutes from './routes/tags';
+import apiTokenRoutes from './routes/apiTokens';
 
 // Load environment variables
 dotenv.config();
@@ -25,6 +26,7 @@ fastify.register(jwtPlugin);
 fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.register(bookmarkRoutes, { prefix: '/api/bookmarks' });
 fastify.register(tagRoutes, { prefix: '/api/tags' });
+fastify.register(apiTokenRoutes, { prefix: '/api/tokens' });
 
 // Health check
 fastify.get('/health', async () => {

@@ -24,12 +24,18 @@ export default async function authRoutes(fastify: FastifyInstance) {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create user
+    // Create user with personal workspace
     const user = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
         name,
+        personalWorkspace: {
+          create: {
+            name: name ? `${name}'s Workspace` : `${email}'s Workspace`,
+            isPersonal: true,
+          },
+        },
       },
     });
 

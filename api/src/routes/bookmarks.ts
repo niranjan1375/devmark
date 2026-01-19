@@ -2,16 +2,19 @@ import { FastifyInstance } from 'fastify';
 import prisma from '../utils/db';
 import { CreateBookmarkInput, UpdateBookmarkInput } from '../types';
 import { validateNote, validateTags, normalizeTags } from '../utils/validation';
+import { getWorkspaceId } from '../utils/workspace';
+import { authenticateFlexible } from '../utils/auth';
 
 export default async function bookmarkRoutes(fastify: FastifyInstance) {
   // Get all bookmarks for authenticated user
   fastify.get('/', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
 
     const bookmarks = await prisma.bookmark.findMany({
-      where: { userId },
+      where: { workspaceId },
       include: {
         tags: true,
       },
@@ -23,15 +26,16 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
   // Get single bookmark
   fastify.get<{ Params: { id: string } }>('/:id', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
     const { id } = request.params;
 
     const bookmark = await prisma.bookmark.findFirst({
       where: {
         id,
-        userId,
+        workspaceId,
       },
       include: {
         tags: true,
@@ -47,9 +51,10 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
   // Create bookmark
   fastify.post<{ Body: CreateBookmarkInput }>('/', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
     const { url, title, note, tags } = request.body;
 
     // Validate required fields
@@ -72,13 +77,21 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
     // Normalize tags (lowercase)
     const normalizedTags = normalizeTags(tags || []);
 
-    // Find or create tags
+    // Find or create tags (scoped to workspace)
     const tagRecords = await Promise.all(
       normalizedTags.map(async (tagName: string) => {
         const tag = await prisma.tag.upsert({
-          where: { name: tagName },
+          where: { 
+            name_workspaceId: {
+              name: tagName,
+              workspaceId,
+            },
+          },
           update: {},
-          create: { name: tagName },
+          create: { 
+            name: tagName,
+            workspaceId,
+          },
         });
         return tag;
       })
@@ -90,7 +103,7 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
         url,
         title,
         note,
-        userId,
+        workspaceId,
         tags: {
           connect: tagRecords.map(tag => ({ id: tag.id })),
         },
@@ -105,15 +118,16 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
   // Update bookmark
   fastify.put<{ Params: { id: string }; Body: UpdateBookmarkInput }>('/:id', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
     const { id } = request.params;
     const { url, title, note, tags } = request.body;
 
-    // Check if bookmark exists and belongs to user
+    // Check if bookmark exists and belongs to user's workspace
     const existingBookmark = await prisma.bookmark.findFirst({
-      where: { id, userId },
+      where: { id, workspaceId },
     });
 
     if (!existingBookmark) {
@@ -148,9 +162,17 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
       const tagRecords = await Promise.all(
         normalizedTags.map(async (tagName: string) => {
           const tag = await prisma.tag.upsert({
-            where: { name: tagName },
+            where: { 
+              name_workspaceId: {
+                name: tagName,
+                workspaceId,
+              },
+            },
             update: {},
-            create: { name: tagName },
+            create: { 
+              name: tagName,
+              workspaceId,
+            },
           });
           return tag;
         })
@@ -185,14 +207,15 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
   // Delete bookmark
   fastify.delete<{ Params: { id: string } }>('/:id', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
     const { id } = request.params;
 
-    // Check if bookmark exists and belongs to user
+    // Check if bookmark exists and belongs to user's workspace
     const existingBookmark = await prisma.bookmark.findFirst({
-      where: { id, userId },
+      where: { id, workspaceId },
     });
 
     if (!existingBookmark) {
@@ -208,12 +231,13 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
 
   // Search bookmarks by tag
   fastify.get<{ Querystring: { tag?: string; search?: string } }>('/search', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
     const { tag, search } = request.query;
 
-    const where: any = { userId };
+    const where: any = { workspaceId };
 
     if (tag) {
       where.tags = {

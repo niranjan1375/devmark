@@ -11,37 +11,71 @@ datasource db {
 }
 
 model User {
-  id        String     @id @default(uuid())
-  email     String     @unique
-  password  String
-  name      String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  bookmarks Bookmark[]
+  id                String      @id @default(uuid())
+  email             String      @unique
+  password          String
+  name              String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  personalWorkspace Workspace?  @relation("PersonalWorkspace")
+  apiTokens         ApiToken[]
 
   @@map("users")
 }
 
+model Workspace {
+  id        String     @id @default(uuid())
+  name      String
+  isPersonal Boolean   @default(true)
+  userId    String     @unique
+  user      User       @relation("PersonalWorkspace", fields: [userId], references: [id], onDelete: Cascade)
+  bookmarks Bookmark[]
+  tags      Tag[]
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@map("workspaces")
+}
+
 model Bookmark {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
   url         String
   title       String
-  note        String   // Required, max 200 chars validated in app layer
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  note        String    // Required, max 200 chars validated in app layer
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
   tags        Tag[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 
-  @@index([userId])
+  @@index([workspaceId])
   @@map("bookmarks")
 }
 
 model Tag {
-  id        String     @id @default(uuid())
-  name      String     @unique // Stored in lowercase for case-insensitive search
-  bookmarks Bookmark[]
-  createdAt DateTime   @default(now())
+  id          String    @id @default(uuid())
+  name        String    // Stored in lowercase for case-insensitive search
+  workspaceId String
+  workspace   Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  bookmarks   Bookmark[]
+  createdAt   DateTime  @default(now())
 
+  @@unique([name, workspaceId]) // Tags are unique per workspace
+  @@index([workspaceId])
   @@map("tags")
+}
+
+model ApiToken {
+  id          String   @id @default(uuid())
+  name        String   // User-friendly name for the token (e.g., "Chrome Extension", "Mobile App")
+  token       String   @unique // Hashed token
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lastUsedAt  DateTime?
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  @@index([userId])
+  @@map("api_tokens")
 }
