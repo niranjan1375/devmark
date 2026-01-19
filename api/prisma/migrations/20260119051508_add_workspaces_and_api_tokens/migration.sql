@@ -63,14 +63,14 @@ WHERE w."userId" = b."userId" AND w."isPersonal" = true;
 ALTER TABLE "bookmarks" ALTER COLUMN "workspaceId" SET NOT NULL;
 
 -- Drop old foreign key and userId column from bookmarks
-ALTER TABLE "bookmarks" DROP CONSTRAINT "bookmarks_userId_fkey";
+ALTER TABLE "bookmarks" DROP CONSTRAINT IF EXISTS "bookmarks_userId_fkey";
 ALTER TABLE "bookmarks" DROP COLUMN "userId";
 
 -- Add new foreign key for workspace
 ALTER TABLE "bookmarks" ADD CONSTRAINT "bookmarks_workspaceId_fkey" FOREIGN KEY ("workspaceId") REFERENCES "workspaces"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
--- CreateIndex for workspaceId on bookmarks
-DROP INDEX "bookmarks_userId_idx";
+-- CreateIndex for workspaceId on bookmarks (drop old index if exists)
+DROP INDEX IF EXISTS "bookmarks_userId_idx";
 CREATE INDEX "bookmarks_workspaceId_idx" ON "bookmarks"("workspaceId");
 
 -- Add workspaceId column to tags (nullable initially)
@@ -120,8 +120,8 @@ DELETE FROM "tags" WHERE "workspaceId" IS NULL;
 -- Make workspaceId NOT NULL
 ALTER TABLE "tags" ALTER COLUMN "workspaceId" SET NOT NULL;
 
--- Drop old unique constraint on tag name
-ALTER TABLE "tags" DROP CONSTRAINT "tags_name_key";
+-- Drop old unique constraint on tag name if exists
+ALTER TABLE "tags" DROP CONSTRAINT IF EXISTS "tags_name_key";
 
 -- Add new composite unique constraint (name + workspaceId)
 CREATE UNIQUE INDEX "tags_name_workspaceId_key" ON "tags"("name", "workspaceId");
