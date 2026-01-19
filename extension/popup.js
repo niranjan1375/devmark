@@ -183,6 +183,9 @@ function showLoginPrompt() {
   document.getElementById('captureForm').style.display = 'none';
   document.getElementById('loginPrompt').style.display = 'block';
   
+  // Get the API URL from config (defaults to localhost for development)
+  const apiUrl = API_URL.replace('/api', '').replace(':3000', ':3001'); // Convert API URL to web app URL
+  
   // Update link in login prompt to show token generation page
   const promptDiv = document.getElementById('loginPrompt');
   promptDiv.innerHTML = `
@@ -197,7 +200,7 @@ function showLoginPrompt() {
       <input type="text" id="apiTokenInput" placeholder="Paste your API token here" style="width: 100%; margin-bottom: 8px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;">
       <button type="button" class="btn-primary" id="saveTokenBtn">Save Token</button>
     </div>
-    <p style="margin-top: 12px;"><a href="http://localhost:3001" target="_blank">Open DevMark</a></p>
+    <p style="margin-top: 12px;"><a href="${apiUrl}" target="_blank">Open DevMark</a></p>
   `;
   
   // Add event listener for saving token

@@ -63,7 +63,9 @@ export async function authenticateFlexible(
  * Verify API token and return user if valid
  */
 async function verifyApiToken(rawToken: string) {
-  if (!rawToken || rawToken.length < 10) {
+  const MIN_TOKEN_LENGTH = 10;
+  
+  if (!rawToken || rawToken.length < MIN_TOKEN_LENGTH) {
     return null;
   }
 

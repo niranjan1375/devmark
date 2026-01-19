@@ -9,8 +9,12 @@ export default async function bookmarkRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { workspaceId: string } }>('/:workspaceId/bookmarks', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({
@@ -36,8 +40,12 @@ export default async function bookmarkRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { workspaceId: string; id: string } }>('/:workspaceId/bookmarks/:id', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId, id } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({
@@ -69,9 +77,13 @@ export default async function bookmarkRoutesV2(fastify: FastifyInstance) {
   fastify.post<{ Params: { workspaceId: string }; Body: CreateBookmarkInput }>('/:workspaceId/bookmarks', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId } = request.params;
     const { url, title, note, tags } = request.body;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({
@@ -148,9 +160,13 @@ export default async function bookmarkRoutesV2(fastify: FastifyInstance) {
   }>('/:workspaceId/bookmarks/search', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId } = request.params;
     const { tag, search } = request.query;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({

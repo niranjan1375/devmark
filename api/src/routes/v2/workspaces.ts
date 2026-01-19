@@ -6,7 +6,11 @@ export default async function workspaceRoutesV2(fastify: FastifyInstance) {
   fastify.get('/', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     const workspaces = await prisma.workspace.findMany({
       where: { userId },
@@ -33,8 +37,12 @@ export default async function workspaceRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { id: string } }>('/:id', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { id } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     const workspace = await prisma.workspace.findFirst({
       where: {
@@ -62,9 +70,13 @@ export default async function workspaceRoutesV2(fastify: FastifyInstance) {
   fastify.put<{ Params: { id: string }; Body: { name: string } }>('/:id', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { id } = request.params;
     const { name } = request.body;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     if (!name || name.trim().length === 0) {
       return reply.code(400).send({ error: 'Workspace name is required' });
@@ -91,8 +103,12 @@ export default async function workspaceRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { id: string } }>('/:id/stats', {
     onRequest: [fastify.authenticate],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { id } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({

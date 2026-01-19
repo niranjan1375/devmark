@@ -7,8 +7,12 @@ export default async function tagRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { workspaceId: string } }>('/:workspaceId/tags', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({
@@ -43,8 +47,12 @@ export default async function tagRoutesV2(fastify: FastifyInstance) {
   fastify.get<{ Params: { workspaceId: string; tagName: string } }>('/:workspaceId/tags/:tagName/bookmarks', {
     onRequest: [authenticateFlexible],
   }, async (request, reply) => {
-    const userId = request.user?.id as string;
+    const userId = request.user?.id;
     const { workspaceId, tagName } = request.params;
+    
+    if (!userId) {
+      return reply.code(401).send({ error: 'Unauthorized' });
+    }
 
     // Verify workspace belongs to user
     const workspace = await prisma.workspace.findFirst({
