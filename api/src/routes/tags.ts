@@ -1,45 +1,33 @@
 import { FastifyInstance } from 'fastify';
 import prisma from '../utils/db';
+import { getWorkspaceId } from '../utils/workspace';
+import { authenticateFlexible } from '../utils/auth';
 
 export default async function tagRoutes(fastify: FastifyInstance) {
-  // Get all tags for authenticated user (tags from their bookmarks)
+  // Get all tags for authenticated user (tags from their workspace)
   fastify.get('/', {
-    onRequest: [fastify.authenticate],
+    onRequest: [authenticateFlexible],
   }, async (request, reply) => {
     const userId = request.user?.id as string;
+    const workspaceId = await getWorkspaceId(userId);
 
-    // Get all unique tags from user's bookmarks
-    const bookmarks = await prisma.bookmark.findMany({
-      where: { userId },
+    // Get all tags in the workspace with their usage count
+    const tags = await prisma.tag.findMany({
+      where: { workspaceId },
       include: {
-        tags: true,
+        _count: {
+          select: { bookmarks: true },
+        },
       },
     });
 
-    // Extract unique tags
-    const tagsSet = new Set<string>();
-    const tagsMap = new Map<string, any>();
+    // Transform to match expected format
+    const tagsWithCount = tags.map(tag => ({
+      id: tag.id,
+      name: tag.name,
+      count: tag._count.bookmarks,
+    })).sort((a, b) => b.count - a.count);
 
-    bookmarks.forEach((bookmark: any) => {
-      bookmark.tags.forEach((tag: any) => {
-        if (!tagsSet.has(tag.id)) {
-          tagsSet.add(tag.id);
-          tagsMap.set(tag.id, {
-            id: tag.id,
-            name: tag.name,
-            count: 1,
-          });
-        } else {
-          const existing = tagsMap.get(tag.id);
-          if (existing) {
-            existing.count += 1;
-          }
-        }
-      });
-    });
-
-    const tags = Array.from(tagsMap.values()).sort((a, b) => b.count - a.count);
-
-    return reply.send(tags);
+    return reply.send(tagsWithCount);
   });
 }

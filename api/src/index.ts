@@ -5,6 +5,10 @@ import jwtPlugin from './plugins/jwt';
 import authRoutes from './routes/auth';
 import bookmarkRoutes from './routes/bookmarks';
 import tagRoutes from './routes/tags';
+import apiTokenRoutes from './routes/apiTokens';
+import workspaceRoutesV2 from './routes/v2/workspaces';
+import bookmarkRoutesV2 from './routes/v2/bookmarks';
+import tagRoutesV2 from './routes/v2/tags';
 
 // Load environment variables
 dotenv.config();
@@ -21,10 +25,16 @@ fastify.register(cors, {
 
 fastify.register(jwtPlugin);
 
-// Register routes
+// Register V1 routes (backward compatible)
 fastify.register(authRoutes, { prefix: '/api/auth' });
 fastify.register(bookmarkRoutes, { prefix: '/api/bookmarks' });
 fastify.register(tagRoutes, { prefix: '/api/tags' });
+fastify.register(apiTokenRoutes, { prefix: '/api/tokens' });
+
+// Register V2 routes (workspace-aware)
+fastify.register(workspaceRoutesV2, { prefix: '/api/v2/workspaces' });
+fastify.register(bookmarkRoutesV2, { prefix: '/api/v2/workspaces' });
+fastify.register(tagRoutesV2, { prefix: '/api/v2/workspaces' });
 
 // Health check
 fastify.get('/health', async () => {

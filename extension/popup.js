@@ -6,7 +6,7 @@ let tags = [];
 
 // Initialize popup
 document.addEventListener('DOMContentLoaded', async () => {
-  const token = await getToken();
+  const token = await getApiToken();
   
   if (!token) {
     showLoginPrompt();
@@ -129,12 +129,12 @@ async function saveBookmark() {
   saveBtn.textContent = 'Saving...';
 
   try {
-    const token = await getToken();
+    const token = await getApiToken();
     const response = await fetch(`${API_URL}/api/bookmarks`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
+        'X-API-Token': token, // Use X-API-Token header for API tokens
       },
       body: JSON.stringify({
         url: currentUrl,
@@ -182,12 +182,49 @@ function clearError() {
 function showLoginPrompt() {
   document.getElementById('captureForm').style.display = 'none';
   document.getElementById('loginPrompt').style.display = 'block';
+  
+  // Get the API URL from config (defaults to localhost for development)
+  const apiUrl = API_URL.replace('/api', '').replace(':3000', ':3001'); // Convert API URL to web app URL
+  
+  // Update link in login prompt to show token generation page
+  const promptDiv = document.getElementById('loginPrompt');
+  promptDiv.innerHTML = `
+    <p>Please generate an API token to use the extension.</p>
+    <ol style="text-align: left; font-size: 14px; color: #6b7280;">
+      <li>Open DevMark web app</li>
+      <li>Go to Settings or Profile</li>
+      <li>Generate a new API token for "Chrome Extension"</li>
+      <li>Copy the token and paste it below</li>
+    </ol>
+    <div style="margin-top: 16px;">
+      <input type="text" id="apiTokenInput" placeholder="Paste your API token here" style="width: 100%; margin-bottom: 8px; padding: 8px; border: 1px solid #d1d5db; border-radius: 4px;">
+      <button type="button" class="btn-primary" id="saveTokenBtn">Save Token</button>
+    </div>
+    <p style="margin-top: 12px;"><a href="${apiUrl}" target="_blank">Open DevMark</a></p>
+  `;
+  
+  // Add event listener for saving token
+  document.getElementById('saveTokenBtn').addEventListener('click', async () => {
+    const tokenInput = document.getElementById('apiTokenInput');
+    const token = tokenInput.value.trim();
+    
+    if (!token) {
+      alert('Please enter a valid API token');
+      return;
+    }
+    
+    // Save token to chrome storage
+    chrome.storage.local.set({ devmarkApiToken: token }, () => {
+      // Reload the popup
+      location.reload();
+    });
+  });
 }
 
-async function getToken() {
+async function getApiToken() {
   return new Promise((resolve) => {
-    chrome.storage.local.get(['devmarkToken'], (result) => {
-      resolve(result.devmarkToken || null);
+    chrome.storage.local.get(['devmarkApiToken'], (result) => {
+      resolve(result.devmarkApiToken || null);
     });
   });
 }
