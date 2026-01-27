@@ -18,11 +18,11 @@ export default async function authRoutes(fastify: FastifyInstance) {
     });
 
     if (existingUser) {
-      return reply.code(409).send({ error: 'User already exists' });
+      return reply.code(409).send({ error: 'Registration failed' });
     }
 
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash password with increased rounds for better security
+    const hashedPassword = await bcrypt.hash(password, 12);
 
     // Create user with personal workspace
     const user = await prisma.user.create({
@@ -65,14 +65,14 @@ export default async function authRoutes(fastify: FastifyInstance) {
     });
 
     if (!user) {
-      return reply.code(401).send({ error: 'Invalid credentials' });
+      return reply.code(401).send({ error: 'Authentication failed' });
     }
 
     // Verify password
     const validPassword = await bcrypt.compare(password, user.password);
 
     if (!validPassword) {
-      return reply.code(401).send({ error: 'Invalid credentials' });
+      return reply.code(401).send({ error: 'Authentication failed' });
     }
 
     const token = fastify.jwt.sign({ id: user.id, email: user.email });

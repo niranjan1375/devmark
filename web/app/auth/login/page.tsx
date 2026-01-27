@@ -29,21 +29,24 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-md">
-        <h1 className="text-3xl font-bold mb-6 text-center text-gray-900">
-          Login to DevMark
-        </h1>
+    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
+      <div className="w-full max-w-md border-2 border-zinc-800 bg-zinc-900/50 p-8">
+        <div className="border-l-4 border-emerald-500 pl-4 mb-8">
+          <h1 className="text-3xl font-black text-zinc-100">
+            Login
+          </h1>
+          <p className="text-zinc-400 font-mono text-sm mt-1">./auth/login</p>
+        </div>
 
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="border-2 border-red-500 bg-red-500/10 text-red-400 px-4 py-3 mb-6 font-mono text-sm">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-xs font-mono text-zinc-400 mb-2 uppercase tracking-wide">
               Email
             </label>
             <input
@@ -51,13 +54,13 @@ export default function LoginPage() {
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-zinc-950 border-2 border-zinc-800 text-zinc-100 focus:outline-none focus:border-emerald-500 font-mono"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="password" className="block text-xs font-mono text-zinc-400 mb-2 uppercase tracking-wide">
               Password
             </label>
             <input
@@ -65,7 +68,7 @@ export default function LoginPage() {
               id="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-zinc-950 border-2 border-zinc-800 text-zinc-100 focus:outline-none focus:border-emerald-500 font-mono"
               required
             />
           </div>
@@ -73,22 +76,22 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+            className="w-full px-4 py-3 bg-emerald-500 text-zinc-950 font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-2 border-emerald-500"
           >
-            {loading ? 'Logging in...' : 'Login'}
+            {loading ? 'Authenticating...' : 'Login'}
           </button>
         </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
-          <Link href="/auth/register" className="text-blue-600 hover:text-blue-800">
-            Register
+        <p className="mt-6 text-center text-sm text-zinc-400 font-mono">
+          No account?{' '}
+          <Link href="/auth/register" className="text-emerald-500 hover:text-emerald-400">
+            Sign up
           </Link>
         </p>
 
         <p className="mt-4 text-center">
-          <Link href="/" className="text-blue-600 hover:text-blue-800 text-sm">
-            ← Back to home
+          <Link href="/" className="text-zinc-500 hover:text-zinc-400 text-sm font-mono">
+            ← back
           </Link>
         </p>
       </div>

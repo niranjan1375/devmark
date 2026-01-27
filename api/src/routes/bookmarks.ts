@@ -62,6 +62,16 @@ export default async function bookmarkRoutes(fastify: FastifyInstance) {
       return reply.code(400).send({ error: 'URL and title are required' });
     }
 
+    // Validate URL format and protocol
+    try {
+      const urlObj = new URL(url);
+      if (!['http:', 'https:'].includes(urlObj.protocol)) {
+        return reply.code(400).send({ error: 'Only HTTP and HTTPS URLs are allowed' });
+      }
+    } catch {
+      return reply.code(400).send({ error: 'Invalid URL format' });
+    }
+
     // Validate note
     const noteValidation = validateNote(note);
     if (!noteValidation.valid) {

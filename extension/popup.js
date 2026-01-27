@@ -91,10 +91,16 @@ function renderTags() {
   tags.forEach(tag => {
     const tagEl = document.createElement('span');
     tagEl.className = 'tag';
-    tagEl.innerHTML = `
-      ${tag}
-      <button type="button" onclick="removeTag('${tag.replace(/'/g, "\\'")}')">×</button>
-    `;
+    
+    const tagText = document.createTextNode(tag);
+    tagEl.appendChild(tagText);
+    
+    const removeBtn = document.createElement('button');
+    removeBtn.type = 'button';
+    removeBtn.textContent = '×';
+    removeBtn.onclick = () => removeTag(tag);
+    tagEl.appendChild(removeBtn);
+    
     tagList.appendChild(tagEl);
   });
 }

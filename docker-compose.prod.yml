@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: devmark-postgres-prod
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-devmark}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-devmark}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-devmark}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - devmark-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: devmark-api-prod
+    restart: unless-stopped
+    env_file:
+      - api/.env.production
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${DB_USER:-devmark}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-devmark}?schema=public
+      PORT: 3000
+      HOST: 0.0.0.0
+    ports:
+      - "${API_PORT:-3000}:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - devmark-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    container_name: devmark-web-prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_PUBLIC_API_URL: ${API_URL:-http://localhost:3000}
+    ports:
+      - "${WEB_PORT:-3001}:3001"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks:
+      - devmark-network
+
+volumes:
+  postgres_data_prod:
+    driver: local
+
+networks:
+  devmark-network:
+    driver: bridge
