@@ -18,8 +18,8 @@ export default async function apiTokenRoutes(fastify: FastifyInstance) {
     // Generate a random token (this is what the user will use)
     const rawToken = crypto.randomBytes(32).toString('hex');
     
-    // Hash the token for storage
-    const hashedToken = await bcrypt.hash(rawToken, 10);
+    // Hash the token for storage with increased rounds
+    const hashedToken = await bcrypt.hash(rawToken, 12);
 
     // Create the token record
     const apiToken = await prisma.apiToken.create({

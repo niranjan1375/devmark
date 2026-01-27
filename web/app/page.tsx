@@ -24,55 +24,82 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-blue-50 to-white">
-      <main className="flex flex-col items-center gap-8 px-8 py-16 text-center max-w-4xl">
-        <h1 className="text-6xl font-bold text-gray-900">
-          Dev<span className="text-blue-600">Mark</span>
-        </h1>
-        <p className="text-2xl text-gray-700 max-w-2xl">
-          Production-grade bookmark manager for developers
-        </p>
-        <p className="text-lg text-gray-600 max-w-xl">
-          Every bookmark comes with a mandatory note explaining why you saved it.
-          Organize with tags, not folders. Max 5 tags per bookmark. Built for solo developers.
-        </p>
-        
-        <div className="flex gap-4 mt-8">
+    <div className="min-h-screen bg-black text-white">
+      <div className="max-w-6xl mx-auto px-8 py-24">
+        {/* Header */}
+        <div className="mb-24">
+          <div className="inline-block mb-8">
+            <h1 className="text-8xl font-black tracking-tighter">
+              <span className="text-white">dev</span>
+              <span className="text-lime-400">mark</span>
+            </h1>
+            <div className="h-1 w-32 bg-lime-400 mt-2"></div>
+          </div>
+          <p className="text-2xl text-gray-400 font-mono mb-4">
+            bookmarks --with-context
+          </p>
+        </div>
+
+        {/* Hero Content */}
+        <div className="max-w-3xl mb-20">
+          <h2 className="text-5xl font-bold leading-tight mb-8 text-white">
+            Stop hoarding links you'll never revisit.
+          </h2>
+          <p className="text-xl text-gray-300 leading-relaxed mb-6">
+            Every bookmark needs a{' '}
+            <span className="text-lime-400 font-bold">200-character note</span> explaining
+            why it matters. No exceptions.
+          </p>
+          <p className="text-lg text-gray-400 leading-relaxed">
+            Tags instead of folders. Search instead of scrolling. Built for developers who
+            value their time.
+          </p>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex gap-4 mb-32">
           <Link
             href="/auth/login"
-            className="px-8 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-medium"
+            className="px-10 py-5 bg-lime-400 text-black font-bold text-lg hover:bg-lime-300 transition-all transform hover:scale-105"
           >
             Login
           </Link>
           <Link
             href="/auth/register"
-            className="px-8 py-3 bg-white text-blue-600 border-2 border-blue-600 rounded-lg hover:bg-blue-50 transition-colors text-lg font-medium"
+            className="px-10 py-5 bg-transparent text-white font-bold text-lg border-2 border-gray-700 hover:border-lime-400 hover:text-lime-400 transition-all"
           >
-            Register
+            Sign Up
           </Link>
         </div>
 
-        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 text-left max-w-4xl">
-          <div className="p-6 bg-white rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold mb-2 text-gray-900">📝 Mandatory Notes</h3>
-            <p className="text-gray-600">
-              Every bookmark requires a note (max 200 chars) explaining why you saved it. No more forgotten bookmarks!
+        {/* Feature Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="border border-gray-800 p-8 hover:border-lime-400/50 transition-colors">
+            <div className="text-lime-400 text-xs font-mono mb-4 tracking-widest">RULE #1</div>
+            <h3 className="text-2xl font-bold mb-4">Context Required</h3>
+            <p className="text-gray-400 leading-relaxed">
+              200-character limit forces you to think. Future you will actually remember why you
+              saved this.
             </p>
           </div>
-          <div className="p-6 bg-white rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold mb-2 text-gray-900">🏷️ Tags Only</h3>
-            <p className="text-gray-600">
-              No folders - just tags. Add up to 5 tags per bookmark. Case-insensitive with spaces allowed.
+          <div className="border border-gray-800 p-8 hover:border-lime-400/50 transition-colors">
+            <div className="text-lime-400 text-xs font-mono mb-4 tracking-widest">RULE #2</div>
+            <h3 className="text-2xl font-bold mb-4">5 Tags Maximum</h3>
+            <p className="text-gray-400 leading-relaxed">
+              Constraints create clarity. No nested folders, no organizational paralysis. Just tag
+              and move on.
             </p>
           </div>
-          <div className="p-6 bg-white rounded-lg shadow-sm">
-            <h3 className="text-xl font-semibold mb-2 text-gray-900">🚀 Production Quality</h3>
-            <p className="text-gray-600">
-              Built with TypeScript, Fastify, Next.js, and Postgres. Real SaaS quality for solo developers.
+          <div className="border border-gray-800 p-8 hover:border-lime-400/50 transition-colors">
+            <div className="text-lime-400 text-xs font-mono mb-4 tracking-widest">STACK</div>
+            <h3 className="text-2xl font-bold mb-4">Production Grade</h3>
+            <p className="text-gray-400 leading-relaxed">
+              TypeScript, Fastify, Next.js, PostgreSQL. Built with the same stack you'd use for
+              real products.
             </p>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }

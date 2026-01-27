@@ -16,49 +16,47 @@ export default function BookmarkCard({ bookmark, onDelete }: BookmarkCardProps) 
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-2">
-        <a
-          href={bookmark.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-lg font-semibold text-blue-600 hover:text-blue-800 break-all"
-        >
-          {bookmark.title}
-        </a>
-      </div>
+    <div className="border border-gray-800 bg-black p-6 hover:border-lime-400 transition-all group">
+      <a
+        href={bookmark.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="block mb-4 text-xl font-bold text-white hover:text-lime-400 transition-colors line-clamp-2"
+      >
+        {bookmark.title}
+      </a>
 
-      <p className="text-gray-700 text-sm mb-3 italic">
-        "{bookmark.note}"
+      <p className="text-gray-400 text-base mb-6 leading-relaxed">
+        {bookmark.note}
       </p>
 
       {bookmark.tags.length > 0 && (
-        <div className="flex flex-wrap gap-2 mb-3">
+        <div className="flex flex-wrap gap-2 mb-5">
           {bookmark.tags.map((tag) => (
             <span
               key={tag.id}
-              className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs"
+              className="px-3 py-1 bg-gray-900 text-lime-400 text-sm font-mono border border-gray-800"
             >
-              {tag.name}
+              #{tag.name}
             </span>
           ))}
         </div>
       )}
 
-      <div className="flex justify-between items-center text-xs text-gray-500">
-        <span>{new Date(bookmark.createdAt).toLocaleDateString()}</span>
-        <div className="flex gap-2">
+      <div className="flex justify-between items-center text-sm text-gray-500 font-mono border-t border-gray-900 pt-4">
+        <span>{new Date(bookmark.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+        <div className="flex gap-6 opacity-0 group-hover:opacity-100 transition-opacity">
           <Link
             href={`/bookmarks/${bookmark.id}`}
-            className="text-blue-600 hover:text-blue-800"
+            className="text-gray-400 hover:text-lime-400 transition-colors"
           >
-            Edit
+            edit
           </Link>
           <button
             onClick={handleDelete}
-            className="text-red-600 hover:text-red-800"
+            className="text-gray-400 hover:text-red-500 transition-colors"
           >
-            Delete
+            delete
           </button>
         </div>
       </div>
