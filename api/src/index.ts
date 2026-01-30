@@ -67,7 +67,7 @@ fastify.register(rateLimit, {
 // CORS configuration
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(',')
-  : ['http://localhost:3001', 'http://localhost:3000'];
+  : ['http://localhost:4200', 'http://localhost:4100'];
 
 fastify.register(cors, {
   origin: (origin, cb) => {
@@ -154,7 +154,7 @@ process.on('SIGINT', () => closeGracefully('SIGINT'));
 // Start server
 const start = async () => {
   try {
-    const port = parseInt(process.env.PORT || '3000', 10);
+    const port = parseInt(process.env.PORT || '4100', 10);
     const host = process.env.HOST || '0.0.0.0';
 
     await fastify.listen({ port, host });

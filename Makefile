@@ -29,8 +29,8 @@ dev-web: ## Start web development server
 	cd web && npm run dev
 
 dev: ## Start both API and web development servers
-	@echo "Starting API on port 3000 and Web on port 3001..."
-	@echo "Open http://localhost:3001 in your browser"
+	@echo "Starting API on port 4100 and Web on port 4200..."
+	@echo "Open http://localhost:4200 in your browser"
 	make -j2 dev-api dev-web
 
 build: ## Build all projects

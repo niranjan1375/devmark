@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/lib/auth';
-import Link from 'next/link';
+import GitHubCard from '@/components/GitHubCard';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -29,72 +29,59 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-950">
-      <div className="w-full max-w-md border-2 border-zinc-800 bg-zinc-900/50 p-8">
-        <div className="border-l-4 border-emerald-500 pl-4 mb-8">
-          <h1 className="text-3xl font-black text-zinc-100">
-            Login
-          </h1>
-          <p className="text-zinc-400 font-mono text-sm mt-1">./auth/login</p>
+    <GitHubCard title="Sign in to DevMark">
+      {error && (
+        <div className="mb-4 px-4 py-3 bg-[#ffebe9] border border-[#ff818266] rounded-md text-sm text-[#86181d]">
+          <div className="flex items-center">
+            <span className="font-semibold mr-1">Error:</span> {error}
+          </div>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="email" className="block text-sm font-normal text-white mb-2">
+            Username or email address
+          </label>
+          <input
+            type="email"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className="github-input w-full px-3 py-1.5 rounded-md text-sm leading-5 shadow-sm"
+            required
+            autoCapitalize="off"
+            autoCorrect="off"
+          />
         </div>
 
-        {error && (
-          <div className="border-2 border-red-500 bg-red-500/10 text-red-400 px-4 py-3 mb-6 font-mono text-sm">
-            {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className="block text-xs font-mono text-zinc-400 mb-2 uppercase tracking-wide">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-950 border-2 border-zinc-800 text-zinc-100 focus:outline-none focus:border-emerald-500 font-mono"
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="block text-xs font-mono text-zinc-400 mb-2 uppercase tracking-wide">
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label htmlFor="password" className="block text-sm font-normal text-white">
               Password
             </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-zinc-950 border-2 border-zinc-800 text-zinc-100 focus:outline-none focus:border-emerald-500 font-mono"
-              required
-            />
+            <a href="#" className="text-xs text-[#58a6ff] hover:text-[#58a6ff] hover:underline decoration-1">
+              Forgot password?
+            </a>
           </div>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            className="github-input w-full px-3 py-1.5 rounded-md text-sm leading-5 shadow-sm"
+            required
+          />
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-4 py-3 bg-emerald-500 text-zinc-950 font-bold hover:bg-emerald-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors border-2 border-emerald-500"
-          >
-            {loading ? 'Authenticating...' : 'Login'}
-          </button>
-        </form>
-
-        <p className="mt-6 text-center text-sm text-zinc-400 font-mono">
-          No account?{' '}
-          <Link href="/auth/register" className="text-emerald-500 hover:text-emerald-400">
-            Sign up
-          </Link>
-        </p>
-
-        <p className="mt-4 text-center">
-          <Link href="/" className="text-zinc-500 hover:text-zinc-400 text-sm font-mono">
-            ← back
-          </Link>
-        </p>
-      </div>
-    </div>
+        <button
+          type="submit"
+          disabled={loading}
+          className="github-btn w-full mt-4 px-4 py-1.5 rounded-md text-sm font-bold shadow-sm"
+        >
+          {loading ? 'Signing in...' : 'Sign in'}
+        </button>
+      </form>
+    </GitHubCard>
   );
 }
